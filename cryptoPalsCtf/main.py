@@ -1,4 +1,4 @@
-#this is a function that converts Hex to Base64
+# start the program that has different tools to help with the crypto challenges
 
 from userInput import dealWithUserInput
 from tools.decodeLibraries import B64Encoder 
