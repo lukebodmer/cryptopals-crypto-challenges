@@ -1,5 +1,4 @@
 # here is the program I wrote to solve cryptopals CTF
-
 # here is my dictionary for convering Base64 digits to 6 bit binary
 B64Dict = {
     "000000":"A",
@@ -98,6 +97,14 @@ def convertHexToBinary(someString):
     decodedHex1 = [invertedHexDict[x] for x in encodedHex1]
     return decodedHex1
 
+#for now, take in 8 bits and convert to 2 hex characters
+def convertBinaryToHex(someBinary):
+    hexOut = list(someBinary)
+    hexOut = groupBitsByN(hexOut, 4)
+    hexOut = [hexDict[x] for x in hexOut]
+    hexOut = "".join(hexOut)
+    return hexOut
+
 def groupBitsByN(someList, groupingNumber):
     listToString = "".join(someList)
     groupedList = [listToString[i:i+groupingNumber] for i in range(0, len(listToString), groupingNumber)]
@@ -112,6 +119,18 @@ def encodeFourBitToHex(someList):
     encodedHex = [hexDict[x] for x in someList]
     xorOutput = "".join(encodedHex)
     return xorOutput
+
+'''def asciiToBinary(someCharacter):
+    d = {}
+    wb = xlrd.open_workbook('foo.xls')
+    sh = wb.sheet_by_index(2)   
+    for i in range(138):
+        cell_value_class = sh.cell(i,2).value
+        cell_value_id = sh.cell(i,0).value
+        d[cell_value_class] = cell_value_id'''
+
+
+    
 
 # take two binary strings and XOR them. Return a string
 def xorFunction(firstString, secondString):
@@ -172,3 +191,36 @@ class XorMachine:
 
     def getOutput(self):
         return self.xorOutput
+
+class xorHexAgainstFile:
+
+    def __init__(self,someHex):
+        #convert input to list of 4bit bytes
+        binaryHex = convertHexToBinary(someHex)
+        binaryHex = groupBitsByN(binaryHex, 8)
+
+        # convert allSingleCharacters.txt to list of 4bit bytes
+        hexCharacters = open("allSingleCharacters.txt", "r")
+        hexCharacters = hexCharacters.read()
+        hexCharacters = hexCharacters.replace(',', '')
+        print(hexCharacters)
+        hexCharacters = convertHexToBinary(hexCharacters)
+        print(hexCharacters)
+        hexCharacters = groupBitsByN(hexCharacters, 8)
+        print(hexCharacters)
+
+        # XOR each bit in hexCharacters list with the user hex input
+        xorFileOut = open("xorFileOut.txt","w+")
+        for character in hexCharacters:
+            for byte in binaryHex:
+                byte1 = groupBitsByN(byte, 4)
+                byte1 = [hexDict[x] for x in byte1]
+                byte1 = "".join(byte1)
+                character1 = groupBitsByN(character, 4)
+                character1 = [hexDict[x] for x in character1]
+                character1 = "".join(character1)
+                #character1 = hexDict[character]
+                eachOutput = XorMachine(byte1, character1)
+                xorFileOut.write(eachOutput.getOutput())
+            xorFileOut.write("\n")
+        xorFileOut.close()
