@@ -1,8 +1,9 @@
 from tools.decodeLibraries import base64encoder 
 from tools.decodeLibraries import xorMachine
-from tools.decodeLibraries import convertHexToBinary
 from tools.decodeLibraries import xorHexAgainstFile
 from tools.decodeLibraries import convertHexToBytes
+from tools.scoringPlainText import compareDecodedWithEnglish
+from tools.decodeLibraries import findKey
 import binascii
 
 class Error(Exception):
@@ -31,7 +32,7 @@ def grabHexFromUser(var):
         userHex.append(input("\n Enter the first hex value to XOR:  "))
         userHex.append(input("\n Enter the second hex value to XOR:  "))
     elif var == '3':
-        userHex.append(input("\nEnter the Hex you would like to XOR against single characters:  "))
+        userHex.append(input("\nEnter the Hex you would like to decode:  "))
     return userHex
 
 
@@ -63,9 +64,9 @@ def pickATask():
             var = input("\nWhat would you like to do?:\n \
                 1) Convert Hex to Base 64\n \
                 2) XOR two equal length Hex strings\n \
-                3) XOR a hex string against every single character\n \
+                3) Decode a string that has been XOR'd with a character\n \
                 4) exit\n\n")
-            optionList = ['1', '2', '3']
+            optionList = ['1', '2', '3', '4']
             if var in optionList:
                 return var
             elif var == '4':
@@ -96,6 +97,7 @@ def collectUserInput(userIn):
         hexNumber = "".join(hexNumber)
         hexBinaryArray = convertHexToBytes(hexNumber)
         xorHexAgainstFile(hexBinaryArray)
+        findKey()
     else:
         print("How did you get here?")
 

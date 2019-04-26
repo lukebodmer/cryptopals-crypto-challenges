@@ -1,5 +1,6 @@
 import codecs
 import binascii
+from tools.scoringPlainText import compareDecodedWithEnglish
 # here is the program I wrote to solve cryptopals CTF
 # here is my dictionary for convering Base64 digits to 6 bit binary
 
@@ -44,7 +45,9 @@ def xorHexAgainstFile(userBytes):
         xorByteArray = bytearray()
     xorFileOut.close()
 
-def scorePlainText(plainText):
-    # feed it a book or something and  get the character frequencies
-    # feed it each line of the text and get the character frequencies 
-    # rank each line to how close it is and print them in a file.
+def findKey():
+    bestScore = compareDecodedWithEnglish("xorFileOut.txt")
+    print(bestScore)
+    xorFileOut = open("xorFileOut.txt","r")
+    bestScoreLine = xorFileOut.read().split('\n')[bestScore]
+    print("\n Your decoded Key is:   ", bestScoreLine[12:-2])
