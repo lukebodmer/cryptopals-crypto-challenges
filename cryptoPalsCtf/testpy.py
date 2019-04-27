@@ -1,3 +1,6 @@
+import binascii
+import codecs
+import math
 
 
 def listOfAscii():
@@ -25,6 +28,7 @@ def scorePlainText(plainText):
     return charFreq
 
 
+
 def normalizeKeyValues(someDict):
     factor=1.0/sum(someDict.values())
     for k in someDict:
@@ -43,27 +47,19 @@ def compareCharcterFreq(testTextDict, decodedStringsDict):
             pass
     return sumOfDiferences
 
-def compareDecodedWithEnglish(decodedStringFile):
+f = open("prideAndPrejudice.txt",encoding="utf8")
+string = f.read()
 
-    f = open("prideAndPrejudice.txt",encoding="utf8")
-    englishExample = f.read()
-    testText = scorePlainText(englishExample)
-    testText = normalizeKeyValues(testText)
-
-    decodedKey = open(decodedStringFile, "r")
-
-    scorelist = []
-
-    for line in decodedKey:
-        line = line[12:-2]
-        codeCharacters = scorePlainText(line)
-        codeCharacters = normalizeKeyValues(codeCharacters)
-        score = compareCharcterFreq(testText, codeCharacters)
-        scorelist.append(score)
-    
-    decodedKey.close()
-    f.close()
-    
-    return scorelist.index(min(scorelist))
+fo = open("xorFileOut.txt", "r")
+line = fo.readline()
 
 
+a = scorePlainText(string)
+a = normalizeKeyValues(a)
+b = scorePlainText(line)
+b = normalizeKeyValues(b)
+
+c = compareCharcterFreq(a, b)
+print(a)
+print(b)
+print(c)

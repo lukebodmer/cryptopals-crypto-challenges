@@ -4,6 +4,8 @@ from tools.decodeLibraries import xorHexAgainstFile
 from tools.decodeLibraries import convertHexToBytes
 from tools.scoringPlainText import compareDecodedWithEnglish
 from tools.decodeLibraries import findKey
+from tools.decodeLibraries import detectSingleCharacterXor
+from tools.decodeLibraries import badHexFile
 import binascii
 
 class Error(Exception):
@@ -22,6 +24,7 @@ class ExitProgram(Error):
     '''Given to abort cmd at various times'''
     pass
 
+
 def grabHexFromUser(var):
 
     userHex = []
@@ -33,28 +36,48 @@ def grabHexFromUser(var):
         userHex.append(input("\n Enter the second hex value to XOR:  "))
     elif var == '3':
         userHex.append(input("\nEnter the Hex you would like to decode:  "))
+    else:
+        raise badHexFile 
     return userHex
 
 
-def makeSureItsHex(var):
+def makeSureItsHex(var,request):
     globalHexList = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f']
     while True:
-        try:
-            grabHex = grabHexFromUser(var)
-            for eachHex in grabHex:
-                if eachHex == 'exit':
-                    raise ExitProgram
-                else:
-                    for eachHex in grabHex:
-                        checkHex = list(eachHex)
-                        for x in checkHex:
-                            if x in globalHexList:
-                                pass
-                            else:
-                                raise TypeRealHexError
-            return grabHex
-        except TypeRealHexError:
-            print("\n >>>That doesn't seem to be hex. Please try again<<<")
+        if request == '0':
+            try:
+                grabHex = grabHexFromUser(var)
+                for eachHex in grabHex:
+                    if eachHex == 'exit':
+                        raise ExitProgram
+                    else:
+                        for eachHex in grabHex:
+                            checkHex = list(eachHex)
+                            for x in checkHex:
+                                if x in globalHexList:
+                                    pass
+                                else:
+                                    raise TypeRealHexError
+                return grabHex
+            except TypeRealHexError:
+                print("\n >>>That doesn't seem to be hex. Please try again<<<")
+        else:
+            try:
+                decodedKey = []
+                decodedKey.append(request)
+                checkHex = list(request)
+                checkHex.pop()
+                for x in checkHex:
+                    if x in globalHexList:
+                        pass
+                    else:
+                        raise TypeRealHexError   
+                finalKey = "".join(checkHex)
+                return finalKey
+            except TypeRealHexError:
+                print("\n Something Wrong with your Hex File. Abort!")
+                break
+            
             
             
 # make sure the user picks an avaliable option
@@ -65,11 +88,12 @@ def pickATask():
                 1) Convert Hex to Base 64\n \
                 2) XOR two equal length Hex strings\n \
                 3) Decode a string that has been XOR'd with a character\n \
-                4) exit\n\n")
+                4) Detect encrypted key from file decodedStringData.txt \n \
+                5) exit\n\n")
             optionList = ['1', '2', '3', '4']
             if var in optionList:
                 return var
-            elif var == '4':
+            elif var == '5':
                 raise ExitProgram
             elif var == 'exit':
                 raise ExitProgram
@@ -82,22 +106,24 @@ def pickATask():
 
 def collectUserInput(userIn):
     if userIn == "1":
-        hexNumber = makeSureItsHex(userIn)
+        hexNumber = makeSureItsHex(userIn, '0')
         hexNumber = "".join(hexNumber)
         hexBinaryArray = convertHexToBytes(hexNumber)
         answer = base64encoder(hexBinaryArray)
         print("\nThe encoded B64 output is: ", answer)
     elif userIn == "2": 
-        xor = makeSureItsHex(userIn)
+        xor = makeSureItsHex(userIn, '0')
         xor1 = convertHexToBytes(xor[0])
         xor2 = convertHexToBytes(xor[1])
         print("\nXOR'd output is:", xorMachine(xor1,xor2))
     elif userIn == '3':
-        hexNumber = makeSureItsHex(userIn)
+        hexNumber = makeSureItsHex(userIn, '0')
         hexNumber = "".join(hexNumber)
         hexBinaryArray = convertHexToBytes(hexNumber)
         xorHexAgainstFile(hexBinaryArray)
-        findKey()
+        findKey('0')
+    elif userIn == '4':
+        detectSingleCharacterXor()
     else:
         print("How did you get here?")
 
